@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [[ $# < 2 || $# > 3 ]]; then
+    p="$(basename $0)"
+    echo "usage:  $p user repository [value to encrypt]"
+    echo
+    echo "    or  $p jsmith MyRepo 'VAR=\"s3cret\"'"
+    echo "    or  $p jsmith MyRepo 'P@ssw0rd'"
+    exit 1
+fi >&2
+
+user="$1"
+repo="$2"
+value="$3"
+
+# Fetch key
+keyurl="https://api.travis-ci.org/repos/$user/$repo/key"
+echo "Fetching key from $keyurl ..." >&2
+keyfile=$(mktemp)
+curl -s "$keyurl" > "$keyfile" || {
+    echo "Couldn't fetch key from $keyurl!" >&2
+    exit 1
+}
+
+# (Exceptionally poor)-man's JSON-to-PEM
+sed -i $'s|\\\\n|\\n|g; s/"/\\n/g;' "$keyfile"
+grep -q "BEGIN PUBLIC KEY" "$keyfile" || {
+    echo "Key file from $keyurl seems malformed: $keyfile" >&2
+    exit 1
+}
+
+if [[ -z "$value" ]]; then
+    read -p "Value to encrypt? " value
+fi
+
+echo "Encrypting with openssl rsautl ..." >&2
+
+set -o pipefail
+echo -n "$value" | openssl rsautl -encrypt -inkey "$keyfile" -pubin | base64 -w0 || {
+    echo "Error in openssl rsautl." >&2
+    exit 1
+}
+echo $'\nSuccess.' >&2
