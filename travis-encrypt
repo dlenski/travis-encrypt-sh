@@ -32,7 +32,8 @@ curl -s "$keyurl" > "$keyfile" || {
 }
 
 # (Exceptionally poor)-man's JSON-to-PEM
-sed -i $'s|\\\\n|\\n|g; s/"/\\n/g;' "$keyfile"
+# Some Travis-CI pubkeys have " RSA PUBLIC KEY", where others have the standard " PUBLIC KEY".
+sed -i 's|\\n|\n|g; s|"|\n|g; s/ RSA PUBLIC KEY/ PUBLIC KEY/g' "$keyfile"
 grep -q "BEGIN PUBLIC KEY" "$keyfile" || {
     echo "Key file from $keyurl seems malformed: $keyfile" >&2
     exit 1
