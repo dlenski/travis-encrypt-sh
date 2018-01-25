@@ -14,7 +14,7 @@ fi
 if [[ -z "$user" || -z "$repo" ]]; then
     echo "usage:  $p [user] [repository] [value to encrypt]"
     echo
-    echo "  e.g.: $p 'P@ssw0rd' (only inside a git repo)"
+    echo "  e.g.: $p 'P@ssw0rd' (only inside a repo with a github remote)"
     echo "    or  $p ${user:-jsmith} ${repo:-MyRepo} 'VAR=\"s3cret\"'"
     echo "    or  $p ${user:-jsmith} ${repo:-MyRepo} 'P@ssw0rd'"
     exit 1
