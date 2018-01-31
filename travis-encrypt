@@ -3,7 +3,7 @@
 if [[ $# < 2 ]]; then
     p="$(basename $0)"
     here=$(mktemp)
-    git remote -v 2>/dev/null | grep -oP '(?<=github.com[:/])([^/]+/[^/]+?)(?=\.git| )' > "${here}"
+    git remote -v 2>/dev/null | grep -oP '(?<=github.com[:/])([^/]+/[^/]+?)(?=\.git| )' > "$here"
     IFS=/ read user repo < "$here"
 else
     user="$1"
