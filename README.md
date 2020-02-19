@@ -21,6 +21,24 @@ usage:  travis-encrypt [user] [repository] [value to encrypt]
     or  travis-encrypt jsmith MyRepo 'P@ssw0rd'
 ```
 
+Let's encrypt a secret value for use in the `.travis.yml` of *this* GitHub repository:
+
+```sh
+$ ./travis-encrypt dlenski travis-encrypt-sh 's3cr3t-va1ue' > base64.txt
+Fetching key from https://api.travis-ci.org/repos/dlenski/travis-encrypt-sh/key ...
+Encrypting with openssl rsautl ...
+```
+
+Now `base64.txt` contains a value that can be directly pasted into this repository's `.travis.yml`
+(in order to convey a secret value to the Travis-CI build system without leaking it publicly in this
+repository), as in:
+
+```yaml
+deploy:
+  password:
+    secure: "contents of base64.txt go here"
+```
+
 ## Inspired by…
 
 [My frustrations here](https://github.com/travis-ci/travis-ci/issues/2982#issuecomment-358873469)
